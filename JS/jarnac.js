@@ -40,9 +40,22 @@ const drawLetters = async (letterBag, numLetters) => { // Modifier pour être un
 };
 
 // Fonction pour vérifier si un mot est un nom commun valide (à des fins de démonstration, une simple vérification de longueur)
-const isValidNoun = async (word) => { // Modifier pour être une fonction asynchrone
-    return word.length >= 3; // À remplacer par une vérification plus avancée en utilisant un dictionnaire, si nécessaire
+// Fonction pour vérifier si un mot est un nom commun valide
+const isValidNoun = async (word, playerDrawnLetters) => { // Modifier pour être une fonction asynchrone
+    if (word.length < 3) {
+        return false;
+    }
+
+    // Vérifier que chaque lettre du mot est présente dans les lettres tirées par le joueur
+    for (let letter of word) {
+        if (!playerDrawnLetters.includes(letter)) {
+            return false;
+        }
+    }
+
+    return true;
 };
+
 
 // Fonction pour piocher une lettre de la pioche
 const drawFromDeck = async (letterBag) => { // Modifier pour être une fonction asynchrone
@@ -103,7 +116,7 @@ const runGame = async () => {
             continue;
         }
 
-        if (await isValidNoun(word)) { // Attendre la résolution de la promesse
+        if (await isValidNoun(word, playerDrawnLetters)) { // Attendre la résolution de la promesse
             let wordPlaced = false;
             for (let i = 0; i < playerMat.length; i++) {
                 if (playerMat[i] === '') {
@@ -126,11 +139,15 @@ const runGame = async () => {
                     remainingLetters.push(drawnLetter);
                     console.log(`Lettres du joueur ${currentPlayer}: ${remainingLetters.join(', ')}`);
                 }
+                if (playerMat.filter(word => word !== '').length === 7) {
+                    console.log(`La table du Joueur ${currentPlayer} est remplie. Fin du jeu.`);
+                    return; // Arrêter la fonction runGame et donc le jeu
+                }
             } else {
                 console.log('Il n\'y a pas d\'espace libre sur le tapis.');
             }
         } else {
-            console.log('Mot invalide. Veuillez entrer un mot de trois lettres ou plus.');
+            console.log('Mot invalide. Veuillez entrer un mot de trois lettres ou plus/Utlisez les lettres données.');
         }
 
         if (passPlayed) {
