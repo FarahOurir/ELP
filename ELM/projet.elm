@@ -1,4 +1,5 @@
 module Main exposing (..)
+
 import Browser
 import Html exposing (Html, text, blockquote, div, h1, input, button, label, ul, li)
 import Html.Events exposing (onInput, onClick)
@@ -148,7 +149,7 @@ update msg model =
                 newStatus =
                     if isCorrectGuess then Success else FailureDef
                 newMessage =
-                    if isCorrectGuess then "Congratulation, it's true !" else "sorry! It's false."
+                    if isCorrectGuess then "Congratulations, it's true!" else "Sorry! It's false."
             in
             ( { model | state = newStatus, userInput = newMessage }, Cmd.none )
 
@@ -166,7 +167,8 @@ view model =
             div [] [ text "Prombleme in charging the text file." ]
 
         FailureDef ->
-            text "probléme in charging definition."
+            div [] [ text model.userInput ]
+
 
         Success ->
             let
