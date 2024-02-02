@@ -184,7 +184,7 @@ view model =
             div [] [ text "Prombleme in charging the text file." ]
 
         FailureDef ->
-            text "probléme in charging definition."
+             div [] [ text model.userInput ]
 
         Success ->
             let
