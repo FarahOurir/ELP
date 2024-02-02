@@ -1,3 +1,5 @@
+-- Imports des modules nécessaires
+
 module Main exposing (..)
 
 import Browser
@@ -46,6 +48,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
+-- DEFINITION DES TYPES -------------------------------------------------------
 
 -- MODEL
 
@@ -58,17 +61,21 @@ type alias Model =
     , state : State
     }
 
+-- Type pour représenter l'état de l'application
+
 type State
     = Loading
     | Success
     | FailureText
     | FailureDef
 
+-- Type pour représenter une définition
 
 type alias Definition =
     { word : String
     , meanings : List Meaning
     }
+-- Type pour représenter une signification
 
 type alias Meaning =
     { partOfSpeech : String
@@ -76,7 +83,7 @@ type alias Meaning =
     }
 
 
--- INIT
+-- INITIALISATION ---------------------------------------------------------------
 
 init : () -> ((Model, Cmd Msg))
 init _ =
@@ -88,7 +95,8 @@ init _ =
     )
 
 
--- UPDATE
+-- MISE A JOUR ------------------------------------------------------------------
+-- Messages pouvant être émis par l'application
 
 type Msg
     = GotText (Result Http.Error String)
@@ -98,10 +106,13 @@ type Msg
     | ToggleShowAnswer
     | RequestNewWord
     | CheckGuess
+-- Fonction de mise à jour de l'application
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
+            
+        -- Traitement du résultat de la récupération du texte
         GotText result ->
             case result of
                 Ok fullText ->
@@ -115,6 +126,7 @@ update msg model =
                 Err _ ->
                     ({ model | state = FailureText }, Cmd.none)
 
+        -- Traitement du résultat de la récupération des définitions
         GotDefinition result ->
             let
                 (newModel, newCmd) =
@@ -126,12 +138,16 @@ update msg model =
                             ({ model | state = FailureDef }, Cmd.none)
             in
             (newModel, newCmd)
+
+        -- Mise à jour de l'entrée utilisateur
         ChangeInput newInput ->
             ( { model | userInput = newInput }, Cmd.none )
 
+        -- Basculer l'affichage de la réponse
         ToggleShowAnswer ->
             ( { model | showAnswer = not model.showAnswer }, Cmd.none )
 
+        -- Requête d'un nouveau mot aléatoire
         RequestNewWord ->
             init ()
 
@@ -142,6 +158,7 @@ update msg model =
             in
             ( newModel, getDefinition newWord )
 
+        -- Vérification de la devinette
         CheckGuess ->
             let
                 isCorrectGuess =
@@ -149,13 +166,13 @@ update msg model =
                 newStatus =
                     if isCorrectGuess then Success else FailureDef
                 newMessage =
-                    if isCorrectGuess then "Congratulations, it's true!" else "Sorry! It's false."
+                    if isCorrectGuess then "Congratulation, t's true !" else "sorry! It's false."
             in
             ( { model | state = newStatus, userInput = newMessage }, Cmd.none )
 
 
 
--- VIEW
+-- AFFICHAGE ---------------------------------------------------------------------
 
 view : Model -> Html Msg
 view model =
@@ -167,8 +184,7 @@ view model =
             div [] [ text "Prombleme in charging the text file." ]
 
         FailureDef ->
-            div [] [ text model.userInput ]
-
+            text "probléme in charging definition."
 
         Success ->
             let
@@ -200,7 +216,7 @@ view model =
                 ]
 
 
--- MAIN
+-- MAIN --------------------------------------------------------------------------
 
 main : Program () Model Msg
 main =
