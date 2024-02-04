@@ -27,7 +27,7 @@ export const drawLetters = async (letterBag, numLetters) => {
     }
     return lettersDrawn;
 };
-export const drawFromDeck = async (letterBag) => { // Modifier pour être une fonction asynchrone
+export const drawFromDeck = async (letterBag) => {
     if (letterBag.length === 0) {
         console.log('La pioche est vide.');
         return '';
