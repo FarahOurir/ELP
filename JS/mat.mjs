@@ -5,5 +5,5 @@ export const initializeMats = async () => {
 };
 
 export const isValidNoun = async (word) => {
-    return word.length >= 3; // À remplacer par une vérification plus avancée en utilisant un dictionnaire, si nécessaire
+    return word.length >= 3;
 };
