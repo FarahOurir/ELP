@@ -1,8 +1,8 @@
-const fs = require('fs').promises; // Importer les fonctions asynchrones de fs
+const fs = require('fs').promises;
 const readline = require('readline');
 
 // Initialisation des sacs de lettres pour chaque joueur
-const initializeLetterBags = async () => { // Modifier pour être une fonction asynchrone
+const initializeLetterBags = async () => {
     const letterFrequencies = {
         'A': 14, 'B': 4, 'C': 7, 'D': 5, 'E': 19, 'F': 2, 'G': 4, 'H': 2, 'I': 11,
         'J': 1, 'K': 1, 'L': 6, 'M': 5, 'N': 9, 'O': 8, 'P': 4, 'Q': 1, 'R': 10,
@@ -23,14 +23,14 @@ const initializeLetterBags = async () => { // Modifier pour être une fonction a
 };
 
 // Initialisation des tapis pour chaque joueur
-const initializeMats = async () => { // Modifier pour être une fonction asynchrone
+const initializeMats = async () => {
     const player1Mat = Array(7).fill('');
     const player2Mat = Array(7).fill('');
     return { player1Mat, player2Mat };
 };
 
 // Fonction pour tirer aléatoirement des lettres du sac pour un joueur
-const drawLetters = async (letterBag, numLetters) => { // Modifier pour être une fonction asynchrone
+const drawLetters = async (letterBag, numLetters) => {
     const lettersDrawn = [];
     for (let i = 0; i < numLetters; i++) {
         const randomIndex = Math.floor(Math.random() * letterBag.length);
@@ -39,14 +39,12 @@ const drawLetters = async (letterBag, numLetters) => { // Modifier pour être un
     return lettersDrawn;
 };
 
-// Fonction pour vérifier si un mot est un nom commun valide (à des fins de démonstration, une simple vérification de longueur)
+
 // Fonction pour vérifier si un mot est un nom commun valide
-const isValidNoun = async (word, playerDrawnLetters) => { // Modifier pour être une fonction asynchrone
+const isValidNoun = async (word, playerDrawnLetters) => { 
     if (word.length < 3) {
         return false;
     }
-
-    // Vérifier que chaque lettre du mot est présente dans les lettres tirées par le joueur
     for (let letter of word) {
         if (!playerDrawnLetters.includes(letter)) {
             return false;
@@ -58,7 +56,7 @@ const isValidNoun = async (word, playerDrawnLetters) => { // Modifier pour être
 
 
 // Fonction pour piocher une lettre de la pioche
-const drawFromDeck = async (letterBag) => { // Modifier pour être une fonction asynchrone
+const drawFromDeck = async (letterBag) => {
     if (letterBag.length === 0) {
         console.log('La pioche est vide.');
         return '';
@@ -82,7 +80,7 @@ const enterWordOrPass = async (player) => {
 };
 
 // Fonction pour enregistrer le message dans un fichier de journal si nécessaire
-const logToFile = async (message) => { // Modifier pour être une fonction asynchrone
+const logToFile = async (message) => {
     if (message.includes('Mot valide, placé sur le tapis')) {
         try {
             await fs.appendFile('game_log.txt', message + '\n');
@@ -94,29 +92,27 @@ const logToFile = async (message) => { // Modifier pour être une fonction async
 };
 
 const runGame = async () => {
-    // Initialisation des sacs de lettres pour chaque joueur
-    const { player1Bag, player2Bag } = await initializeLetterBags(); // Attendre la résolution de la promesse
-    // Initialisation des tapis pour chaque joueur
-    const { player1Mat, player2Mat } = await initializeMats(); // Attendre la résolution de la promesse
+    const { player1Bag, player2Bag } = await initializeLetterBags();
+    const { player1Mat, player2Mat } = await initializeMats();
 
     let currentPlayer = 1;
-    let passPlayed = false; // Variable pour suivre si "passer" a été joué
+    let passPlayed = false;
 
     while (true) {
         const playerBag = currentPlayer === 1 ? player1Bag : player2Bag;
         const playerMat = currentPlayer === 1 ? player1Mat : player2Mat;
 
-        const playerDrawnLetters = await drawLetters(playerBag, 6); // Attendre la résolution de la promesse
+        const playerDrawnLetters = await drawLetters(playerBag, 6);
         console.log(`Lettres du joueur ${currentPlayer}: ${playerDrawnLetters.join(', ')}`);
 
-        const word = await enterWordOrPass(currentPlayer); // Attendre la résolution de la promesse
+        const word = await enterWordOrPass(currentPlayer);
 
         if (word.toUpperCase() === 'PASSER') {
             currentPlayer = currentPlayer === 1 ? 2 : 1;
             continue;
         }
 
-        if (await isValidNoun(word, playerDrawnLetters)) { // Attendre la résolution de la promesse
+        if (await isValidNoun(word, playerDrawnLetters)) {
             let wordPlaced = false;
             for (let i = 0; i < playerMat.length; i++) {
                 if (playerMat[i] === '') {
@@ -127,7 +123,7 @@ const runGame = async () => {
             }
             if (wordPlaced) {
                 console.log(`Mot valide, placé sur le tapis du Joueur ${currentPlayer} :`, playerMat);
-                await logToFile(`Mot valide, placé sur le tapis du Joueur ${currentPlayer} : ${playerMat}`); // Attendre la résolution de la promesse
+                await logToFile(`Mot valide, placé sur le tapis du Joueur ${currentPlayer} : ${playerMat}`);
                 const remainingLetters = playerDrawnLetters.filter(letter => !word.includes(letter));
                 console.log(`Lettres restantes du joueur ${currentPlayer}: ${remainingLetters.join(', ')}`);
 
@@ -151,7 +147,7 @@ const runGame = async () => {
         }
 
         if (passPlayed) {
-            passPlayed = false; // Réinitialiser la variable après que le joueur a joué
+            passPlayed = false;
             currentPlayer = currentPlayer === 1 ? 2 : 1;
         }
     }
